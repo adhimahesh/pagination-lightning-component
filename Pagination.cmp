@@ -1,0 +1,101 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                controller='HRHD_SelfServiceDashboardController1'
+                access="global" >
+    
+    <!-- Attribute Declration For Pagination -->
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="keyField" type="String" default="Id"/>
+    <aura:attribute name="sortedBy" type="String"/>
+    <aura:attribute name="sortedDirection" type="String" default="true"/>
+    <aura:attribute name="defaultSortDirection" type="String"/>
+    
+    
+    
+    
+    <!-- Attribute Declration For Pagination -->
+    <aura:attribute name="PaginationList" type="Object"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="totalRecords" type="Integer"/>
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="currentPage" type="Integer" default="1"/>
+    <aura:attribute name="totalPagesCount" type="Integer"/>
+    <!-- Attribute Declration For Pagination End-->
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    
+    <!-- Spinner Start, show the loading screen while -->
+  	<aura:attribute name="isLoading" type="Boolean" default="false"/>
+    <c:HRHD_LoadingSpinner isLoading="{!v.isLoading}" />
+    <!-- Spinner End -->
+    
+    
+    
+    
+    <div class="slds-tabs_default">
+        <ul class="slds-tabs_default__nav" role="tablist">
+            <li class="slds-tabs_default__item slds-is-active" title="Item One" role="presentation">
+                <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item">Item One</a>
+            </li>
+            <li class="slds-tabs_default__item" title="Item Two" role="presentation">
+                <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item">Item Two</a>
+            </li>
+            <li class="slds-tabs_default__item" title="Item Three" role="presentation">
+                <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-3" id="tab-default-3__item">Item Three</a>
+            </li>
+        </ul>
+        <div id="tab-default-1" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">Item One Content</div>
+        <div id="tab-default-2" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-default-2__item">Item Two Content</div>
+        <div id="tab-default-3" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-default-3__item">Item Three Content</div>
+    </div>
+    
+    
+    <div class="slds-m-top_medium" >
+        <lightning:datatable data="{! v.PaginationList }" class="slds-m-top_medium"
+                             columns="{! v.columns }" 
+                             keyField="{! v.keyField }"
+                             hideCheckboxColumn="true"
+                             sortedBy="{! v.sortedBy }"
+                             sortedDirection="{! v.sortedDirection }"
+                             defaultSortDirection="{! v.defaultSortDirection }"
+                             rowNumberOffset="{! v.rowNumberOffset }"
+                             onsort="{! c.updateColumnSorting }"
+                             onrowselection="{! c.getSelectedName }"
+                             onrowaction="{! c.handleRowAction }" />	
+        <br/>
+        <div class="c-container">
+             <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem padding="around-small">
+                    <lightning:select aura:id="recordSize" name="recordSize" label="Records per page" required="true" onchange="{! c.onRecordsPerPageChange }">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </lightning:select>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">
+                    <lightning:buttonGroup >
+                        <lightning:button label="Previous" disabled="{!v.startPage == 0}"  
+                                          onclick="{!c.previous}" variant="brand"
+                                          iconName='utility:back'/>
+                        &nbsp; &nbsp; &nbsp;Page {!v.currentPage} of {!v.totalPagesCount} &nbsp; &nbsp; &nbsp;
+                        <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" 
+                                          onclick="{!c.next}" variant="brand"
+                                          iconName='utility:forward' iconPosition='right'/>
+                    </lightning:buttonGroup>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">
+                    {!v.startPage}-
+                     <aura:if isTrue="{!v.endPage >= v.totalRecords}">
+						        {!v.totalRecords}                 
+                         <aura:set attribute="else">
+                            {!v.endPage+1}
+                         </aura:set>
+                    </aura:if>&nbsp; of&nbsp;{!v.totalRecords}
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+        
+    </div>
+</aura:component>
